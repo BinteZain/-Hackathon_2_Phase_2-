@@ -1,0 +1,19 @@
+# Spec Kit Configuration
+# Purpose: Enable Spec-Kit Plus + Claude Code workflow for full-stack Todo app (Phase II)
+
+version: 1.0
+workflow:
+  enabled: true
+  tools:
+    - claude
+    - github
+    - docker
+project:
+  name: hackathon-todo
+  type: full-stack
+  description: Full-stack Todo application with CRUD functionality, authentication, and REST API
+specifications:
+  directory: specs
+  formats:
+    - markdown
+    - yaml
