@@ -7,7 +7,6 @@
   "installCommand": "cd frontend && npm install",
   "framework": "nextjs",
   "regions": ["iad1"],
-  "rootDirectory": "frontend",
   "env": {
     "NEXT_PUBLIC_API_URL": "https://your-backend-url.vercel.app/api/v1"
   },
