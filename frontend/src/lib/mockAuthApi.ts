@@ -1,10 +1,46 @@
 // Mock authentication API for development purposes
 // This simulates the backend responses when the real backend auth endpoints are not available
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
+interface MockCredentials {
+  email: string;
+  password: string;
+  username?: string;
+}
+
+interface MockRegisterCredentials extends MockCredentials {
+  username: string;
+}
+
+interface MockUser {
+  id: string;
+  email: string;
+  username: string;
+  password: string;
+}
+
+interface MockAuthResponse {
+  data: {
+    success: boolean;
+    token: string;
+    user: {
+      id: string;
+      email: string;
+      username: string;
+    };
+    message: string;
+  };
+}
+
+interface MockProfileResponse {
+  data: {
+    id: string;
+    email: string;
+    username: string;
+  };
+}
 
 // Simulated user data
-const MOCK_USERS = [
+const MOCK_USERS: MockUser[] = [
   {
     id: '1',
     email: 'admin@example.com',
@@ -26,34 +62,34 @@ const MOCK_USERS = [
 ];
 
 // Simple token generation (for development only)
-function generateMockToken(userData) {
+function generateMockToken(userData: { id: string; email: string; username: string }) {
   const payload = {
     user_id: userData.id,
     email: userData.email,
     username: userData.username,
     exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 7) // 7 days expiry
   };
-  
+
   // Base64 encode the payload (simplified for mock)
   const base64Payload = btoa(JSON.stringify(payload));
   return `mock.token.${base64Payload}`;
 }
 
 const mockAuthApi = {
-  login: async (credentials) => {
+  login: async (credentials: MockCredentials): Promise<MockAuthResponse> => {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 500));
-    
-    const user = MOCK_USERS.find(u => 
+
+    const user = MOCK_USERS.find(u =>
       u.email === credentials.email && u.password === credentials.password
     );
-    
+
     if (!user) {
       throw new Error('Invalid credentials');
     }
-    
+
     const token = generateMockToken(user);
-    
+
     return {
       data: {
         success: true,
@@ -68,32 +104,32 @@ const mockAuthApi = {
     };
   },
 
-  register: async (credentials) => {
+  register: async (credentials: MockRegisterCredentials): Promise<MockAuthResponse> => {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 800));
-    
+
     // Check if user already exists
-    const existingUser = MOCK_USERS.find(u => 
+    const existingUser = MOCK_USERS.find(u =>
       u.email === credentials.email || u.username === credentials.username
     );
-    
+
     if (existingUser) {
       throw new Error('Email or username already exists');
     }
-    
+
     // Create new user
-    const newUser = {
+    const newUser: MockUser = {
       id: String(MOCK_USERS.length + 1),
       email: credentials.email,
-      username: credentials.username,
+      username: credentials.username || credentials.email.split('@')[0],
       password: credentials.password // In real app, this would be hashed
     };
-    
+
     // Add to mock users (in memory only)
     MOCK_USERS.push(newUser);
-    
+
     const token = generateMockToken(newUser);
-    
+
     return {
       data: {
         success: true,
@@ -108,10 +144,10 @@ const mockAuthApi = {
     };
   },
 
-  logout: async () => {
+  logout: async (): Promise<{ data: { success: boolean; message: string } }> => {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 200));
-    
+
     return {
       data: {
         success: true,
@@ -120,29 +156,29 @@ const mockAuthApi = {
     };
   },
 
-  getProfile: async () => {
+  getProfile: async (): Promise<MockProfileResponse> => {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 300));
-    
+
     // Decode token to get user info (simplified)
     const token = localStorage.getItem('authToken');
     if (!token) {
       throw new Error('No token found');
     }
-    
+
     try {
       const parts = token.split('.');
       if (parts.length !== 3) {
         throw new Error('Invalid token format');
       }
-      
+
       const payload = JSON.parse(atob(parts[2]));
-      
+
       const user = MOCK_USERS.find(u => u.id === payload.user_id);
       if (!user) {
         throw new Error('User not found');
       }
-      
+
       return {
         data: {
           id: user.id,

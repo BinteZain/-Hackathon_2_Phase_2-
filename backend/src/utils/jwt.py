@@ -5,13 +5,16 @@ from fastapi import HTTPException, status, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings
+import os
 
 
 class Settings(BaseSettings):
     BETTER_AUTH_SECRET: str
+    DATABASE_URL: Optional[str] = None  # Allow DATABASE_URL but don't require it
 
     class Config:
         env_file = ".env"
+        extra = "allow"  # Allow extra environment variables
 
 
 class TokenData(BaseModel):
@@ -20,6 +23,10 @@ class TokenData(BaseModel):
 
 # Load settings
 settings = Settings()
+
+# Validate that BETTER_AUTH_SECRET is set
+if not settings.BETTER_AUTH_SECRET:
+    raise ValueError("BETTER_AUTH_SECRET environment variable is required")
 
 security = HTTPBearer()
 

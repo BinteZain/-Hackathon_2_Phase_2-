@@ -7,7 +7,8 @@ from sqlmodel import SQLModel
 from .routes import tasks
 from .routes.auth import router as auth_router
 from .routes.users import router as users_router
-from .utils.jwt import verify_token
+from .routes.chat import router as chat_router
+from .utils.jwt import verify_token, TokenData
 
 # Create tables
 SQLModel.metadata.create_all(bind=engine)
@@ -22,9 +23,14 @@ app = FastAPI(
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:4000"],  # Allow frontend origin
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:4000",
+        "http://127.0.0.1:4000",
+    ],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allow_headers=["*"],
 )
 
@@ -32,10 +38,16 @@ app.add_middleware(
 app.include_router(tasks.router, prefix="/api/v1", tags=["tasks"])
 app.include_router(auth_router, prefix="/api/v1", tags=["auth"])
 app.include_router(users_router, prefix="/api/v1", tags=["users"])
+app.include_router(chat_router, tags=["chat"])
 
 # Global middleware to verify JWT on all /api/* endpoints
 @app.middleware("http")
 async def verify_jwt_middleware(request: Request, call_next):
+    # Skip JWT verification for OPTIONS requests (CORS preflight)
+    if request.method == "OPTIONS":
+        response = await call_next(request)
+        return response
+    
     # Only check for JWT on /api/* endpoints
     if request.url.path.startswith("/api/"):
         # Skip authentication for auth endpoints (login, register, etc.)
@@ -44,7 +56,7 @@ async def verify_jwt_middleware(request: Request, call_next):
             if request.url.path.endswith("/auth/login") or request.url.path.endswith("/auth/register"):
                 response = await call_next(request)
                 return response
-        
+
         # Extract token from Authorization header
         auth_header = request.headers.get("Authorization")
         if not auth_header or not auth_header.startswith("Bearer "):
@@ -53,12 +65,14 @@ async def verify_jwt_middleware(request: Request, call_next):
                 detail="Missing or invalid Authorization header",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-        
+
         token = auth_header[len("Bearer "):]
-        
+
         # Verify the token
         try:
-            verify_token(token)
+            token_data = verify_token(token)
+            # Store token data in request state for later use
+            request.state.token_data = token_data
         except HTTPException:
             # Re-raise the HTTPException from verify_token which already has the right status code
             raise
@@ -68,7 +82,7 @@ async def verify_jwt_middleware(request: Request, call_next):
                 detail="Invalid authentication token",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-    
+
     response = await call_next(request)
     return response
 

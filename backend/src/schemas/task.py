@@ -9,7 +9,7 @@ class TaskBase(BaseModel):
     description: Optional[str] = None
     status: str
     priority: str
-    due_date: Optional[datetime] = None
+    due_date: Optional[str] = None
 
 
 class TaskCreate(TaskBase):
@@ -21,7 +21,7 @@ class TaskUpdate(BaseModel):
     description: Optional[str] = None
     status: Optional[str] = None
     priority: Optional[str] = None
-    due_date: Optional[datetime] = None
+    due_date: Optional[str] = None
 
 
 class TaskRead(TaskBase):

@@ -35,7 +35,7 @@ export default function TasksPage() {
 
   const handleCreateOrUpdate = async (taskData: Partial<Task>) => {
     try {
-      let response;
+      let response: any;
       if (editingTask) {
         // Update existing task
         response = await apiClient.put(`/tasks/${editingTask.id}`, taskData);
@@ -123,6 +123,15 @@ export default function TasksPage() {
         <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-900">My Tasks</h1>
           <div className="flex items-center space-x-4">
+            <a
+              href="/chatkit"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+              Chat Assistant
+            </a>
             <span className="text-gray-700">Welcome, {user.username}</span>
             <button
               onClick={logout}

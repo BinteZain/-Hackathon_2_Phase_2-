@@ -1,17 +1,24 @@
+# Web Framework
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
 
-pydantic==1.10.13
-pydantic-settings==1.99
+# Data Validation (v2 for MCP SDK compatibility)
+pydantic==2.12.5
+pydantic-settings==2.13.0
 
-sqlmodel==0.0.16
-
+# Database
+sqlmodel==0.0.22
 psycopg2-binary==2.9.9
+asyncpg==0.29.0
+alembic==1.13.1
 
+# MCP SDK
+mcp>=1.0.0
+
+# Authentication
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
 bcrypt==4.0.1
 
-python-multipart==0.0.6
-alembic==1.13.1
-asyncpg==0.29.0
+# Utilities
+python-multipart>=0.0.9

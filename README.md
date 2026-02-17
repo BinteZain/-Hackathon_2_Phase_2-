@@ -1,176 +1,265 @@
-qwe# Hackathon-Todo Monorepo
+# 🚀 Hackathon Todo - Phase 2
 
-This is a full-stack todo application with authentication, built using a monorepo structure.
+A full-stack todo application with authentication, built as a monorepo for **Hackathon Phase 2**.
 
-## Project Structure
+## 📋 Project Overview
+
+This is **Phase 2** of the Hackathon project, featuring:
+- ✅ User Authentication with Better Auth
+- ✅ Task CRUD Operations
+- ✅ Modern UI with Next.js and Tailwind CSS
+- ✅ RESTful API with FastAPI
+- ✅ PostgreSQL Database
+- ✅ Docker Support
+- ✅ Vercel Deployment Ready
+
+## 🏗️ Project Structure
 
 ```
 hackathon-todo/
-├── .spec-kit/
-│   └── config.yaml
-├── specs/                   # Project specifications
-│   ├── overview.md
-│   ├── architecture.md
-│   ├── features/
-│   │   ├── task-crud.md
-│   │   └── authentication.md
-│   ├── api/
-│   │   └── rest-endpoints.md
-│   ├── database/
-│   │   └── schema.md
-│   └── ui/
-│       ├── components.md
-│       └── pages.md
-├── frontend/
+├── frontend/              # Next.js + React + TypeScript
 │   ├── src/
 │   │   ├── pages/
 │   │   ├── components/
 │   │   ├── lib/
-│   │   ├── contexts/
-│   │   ├── types/
-│   │   └── styles/
+│   │   └── contexts/
 │   ├── package.json
-│   ├── tsconfig.json
-│   ├── next.config.js
-│   └── README.md
-├── backend/
+│   └── .env.example
+├── backend/               # FastAPI + Python
 │   ├── src/
 │   │   ├── main.py
 │   │   ├── models/
 │   │   ├── schemas/
-│   │   ├── routes/
-│   │   ├── middleware/
-│   │   ├── database/
-│   │   └── utils/
+│   │   └── routes/
 │   ├── requirements.txt
-│   ├── alembic.ini
-│   └── README.md
-├── docker-compose.yml
-├── README.md
-└── seed.sql
+│   └── .env.example
+├── vercel.json            # Vercel deployment config
+├── docker-compose.yml     # Docker setup
+└── README.md
 ```
 
-## Running the Application
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Docker and Docker Compose
-- Node.js (for local development)
-- Python 3.11+ (for local development)
+- Node.js 18+ and npm
+- Python 3.11+
+- Docker (optional, for containerized deployment)
 
-### Option 1: Using Docker Compose (Recommended)
+### Local Development
 
-1. Navigate to the project root directory:
+#### 1. Backend Setup
+
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+
+# Copy environment variables
+cp .env.example .env
+# Edit .env with your configuration
+
+# Run the backend
+uvicorn src.main:app --reload --port 8000
+```
+
+#### 2. Frontend Setup
+
+```bash
+cd frontend
+npm install
+
+# Copy environment variables
+cp .env.example .env.local
+# Edit .env.local with your configuration
+
+# Run the frontend
+npm run dev
+```
+
+The application will be available at `http://localhost:3000`
+
+### Docker Deployment
+
+```bash
+# Create .env file in root directory
+cp .env.example .env
+
+# Start all services
+docker-compose up --build
+```
+
+## ☁️ Vercel Deployment
+
+### Frontend Deployment (Vercel)
+
+1. **Install Vercel CLI** (optional):
    ```bash
-   cd hackathon-todo
+   npm install -g vercel
    ```
 
-2. Create a `.env` file in the root directory with the following content:
-   ```
-   POSTGRES_DB=todoapp
-   POSTGRES_USER=user
-   POSTGRES_PASSWORD=password
-   BETTER_AUTH_SECRET=your-super-secret-better-auth-key-here-make-it-long-and-random
-   BACKEND_URL=http://localhost:4000/api/v1
-   ```
-
-3. Start the services:
+2. **Deploy to Vercel**:
    ```bash
-   docker-compose up --build
+   # From project root
+   vercel login
+   vercel --prod
    ```
 
-4. The frontend will be available at `http://localhost:3000`
-5. The backend API will be available at `http://localhost:4000`
+3. **Configure Environment Variables** in Vercel dashboard:
+   - `NEXT_PUBLIC_API_URL` - Your backend API URL
 
-### Option 2: Running Locally
+4. **Build Settings**:
+   - **Framework Preset**: Next.js
+   - **Root Directory**: `frontend`
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `.next`
 
-#### Backend
+### Backend Deployment Options
 
-1. Navigate to the backend directory:
-   ```bash
-   cd hackathon-todo/backend
-   ```
+#### Option 1: Vercel Serverless Functions
 
-2. Create and activate a virtual environment:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+1. Move backend code to `api/` directory
+2. Deploy alongside frontend
 
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+#### Option 2: Separate Backend Service
 
-4. Set up environment variables:
-   ```bash
-   export DATABASE_URL=postgresql://user:password@localhost:5432/todoapp
-   export BETTER_AUTH_SECRET=your-super-secret-better-auth-key-here-make-it-long-and-random
-   ```
+- Deploy backend to Railway, Render, or Fly.io
+- Update `NEXT_PUBLIC_API_URL` in frontend
 
-5. Run the backend:
-   ```bash
-   uvicorn src.main:app --reload --port 8000
-   ```
+#### Option 3: Docker Deployment
 
-#### Frontend
+```bash
+docker-compose -f docker-compose.yml up -d
+```
 
-1. Navigate to the frontend directory:
-   ```bash
-   cd hackathon-todo/frontend
-   ```
+## 🔧 Environment Variables
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+### Root `.env`
 
-3. Create a `.env.local` file with the following content:
-   ```
-   NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
-   ```
+```env
+POSTGRES_DB=todoapp
+POSTGRES_USER=user
+POSTGRES_PASSWORD=password
+BETTER_AUTH_SECRET=your-secret-key
+BACKEND_URL=http://localhost:4000/api/v1
+NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+```
 
-4. Run the frontend:
-   ```bash
-   npm run dev
-   ```
+### Frontend `.env.local`
 
-5. The frontend will be available at `http://localhost:3000`
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+```
 
-## Sample Data
+### Backend `.env`
 
-The application comes with sample users and tasks pre-seeded in the database:
+```env
+DATABASE_URL=postgresql://user:password@localhost:5432/todoapp
+BETTER_AUTH_SECRET=your-secret-key
+```
 
-### Users
-- admin@example.com (password: admin123)
-- user1@example.com (password: user123)
-- user2@example.com (password: user223)
+## 🎯 Features
 
-### Tasks
-Sample tasks are created for each user to demonstrate the functionality.
+### Authentication
+- User registration and login
+- JWT token-based authentication
+- Secure password hashing with bcrypt
+- Better Auth integration
 
-## Features
+### Task Management
+- Create, Read, Update, Delete tasks
+- Toggle task completion status
+- User-specific task isolation
+- Real-time updates
 
-- **Authentication**: Secure login and registration with JWT tokens
-- **Task Management**: Full CRUD operations for tasks
-- **User Isolation**: Users can only see and modify their own tasks
-- **Responsive UI**: Works on desktop, tablet, and mobile devices
-- **Professional UI**: Clean, modern interface with TaskCard and TaskForm components
-- **API Integration**: Axios client with automatic JWT token attachment
-- **Error Handling**: Proper error states and notifications
-- **Loading States**: Visual feedback during API operations
+### UI/UX
+- Responsive design (mobile, tablet, desktop)
+- Clean, modern interface
+- Loading states and error handling
+- Toast notifications
 
-## API Endpoints
+## 🧪 Sample Data
 
-The backend provides the following API endpoints:
+### Test Users
+- **admin@example.com** / admin123
+- **user1@example.com** / user123
+- **user2@example.com** / user223
 
+## 🔌 API Endpoints
+
+### Authentication
 - `POST /api/v1/auth/login` - User login
 - `POST /api/v1/auth/register` - User registration
-- `GET /api/v1/tasks` - Get all tasks for authenticated user
-- `GET /api/v1/tasks/{id}` - Get a specific task
-- `POST /api/v1/tasks` - Create a new task
-- `PUT /api/v1/tasks/{id}` - Update a specific task
-- `DELETE /api/v1/tasks/{id}` - Delete a specific task
-- `PATCH /api/v1/tasks/{id}/status` - Toggle task completion status
 
-All endpoints except login and registration require a valid JWT token in the Authorization header.
+### Tasks (Protected)
+- `GET /api/v1/tasks` - Get all user tasks
+- `GET /api/v1/tasks/{id}` - Get specific task
+- `POST /api/v1/tasks` - Create new task
+- `PUT /api/v1/tasks/{id}` - Update task
+- `DELETE /api/v1/tasks/{id}` - Delete task
+- `PATCH /api/v1/tasks/{id}/status` - Toggle task status
+
+## 🛠️ Tech Stack
+
+### Frontend
+- **Framework**: Next.js 13
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **HTTP Client**: Axios
+- **Icons**: Heroicons
+
+### Backend
+- **Framework**: FastAPI
+- **Language**: Python 3.11+
+- **Database**: PostgreSQL
+- **ORM**: SQLModel
+- **Auth**: Better Auth / python-jose
+- **Migrations**: Alembic
+
+### DevOps
+- **Containerization**: Docker & Docker Compose
+- **Deployment**: Vercel (frontend), Railway/Render (backend)
+- **CI/CD**: GitHub Actions (optional)
+
+## 📝 Development
+
+### Running Tests
+
+```bash
+# Backend
+cd backend
+pytest
+
+# Frontend
+cd frontend
+npm run lint
+```
+
+### Code Quality
+
+```bash
+# Backend lint
+cd backend
+flake8 src/
+
+# Frontend lint
+cd frontend
+npm run lint
+```
+
+## 🤝 Contributing
+
+This is a hackathon project for Phase 2. Contributions welcome!
+
+## 📄 License
+
+MIT License - see LICENSE file for details
+
+## 🎉 Acknowledgments
+
+Built for Hackathon Phase 2 🚀
+
+---
+
+**Happy Coding!** 💻✨
